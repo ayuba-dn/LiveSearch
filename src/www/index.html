@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Live Search</title>
+  <meta content="" name="descriptison">
+  <meta content="" name="keywords">
+   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.6.3/rxjs.umd.min.js"></script>
+
+</head>
+
+<body>
+   <input id="searchBox" type="text" />
+   <p id="suggestionsText"></p>
+</body>
+
+<script>
+   const {map} = rxjs.operators;
+   const {switchMap,flatMap} = rxjs.operators;
+   let searchBox = document.getElementById("searchBox");
+   let suggestionsText = document.getElementById("suggestionsText");
+  let InputStreaming = rxjs.fromEvent(searchBox,'keyup')
+   const searchStream = InputStreaming.pipe(
+       map(e => e.target.value)
+      .switchMap(term => fetch(`/users?searchText=${term}`)) 
+      .flatMap(response => response.json())
+   
+   )
+  searchStream.subscribe(data => {
+     data.payload.forEach(searchResult=>{
+      suggestionsText.innerHTML = searchResult;
+     })
+    suggestionsText.innerHTML 
+  })
+
+
+ 
+</script>
+
+</html>
